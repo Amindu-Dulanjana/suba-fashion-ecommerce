@@ -2,7 +2,9 @@ package com.subafashion.ecommerce_backend.service;
 
 import com.subafashion.ecommerce_backend.dto.ProductRequest;
 import com.subafashion.ecommerce_backend.dto.ProductResponse;
+import com.subafashion.ecommerce_backend.model.Category;
 import com.subafashion.ecommerce_backend.model.Product;
+import com.subafashion.ecommerce_backend.repository.CategoryRepository;
 import com.subafashion.ecommerce_backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     // Get all active products
     public List<ProductResponse> getAllProducts() {
@@ -40,8 +45,8 @@ public class ProductService {
     }
 
     // Get by category
-    public List<ProductResponse> getProductsByCategory(String category) {
-        return productRepository.findByCategoryAndActiveTrue(category)
+    public List<ProductResponse> getProductsByCategory(Long categoryId) {
+        return productRepository.findByCategoryIdAndActiveTrue(categoryId)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -84,12 +89,16 @@ public class ProductService {
 
     // Convert Request → Entity
     private void mapToEntity(ProductRequest request, Product product) {
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found: "
+                        + request.getCategoryId()));
+
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
         product.setImageUrl(request.getImageUrl());
-        product.setCategory(request.getCategory());
+        product.setCategory(category);
         product.setFeatured(request.getFeatured() != null ? request.getFeatured() : false);
     }
 
@@ -102,10 +111,15 @@ public class ProductService {
         response.setPrice(product.getPrice());
         response.setStock(product.getStock());
         response.setImageUrl(product.getImageUrl());
-        response.setCategory(product.getCategory());
         response.setFeatured(product.getFeatured());
         response.setActive(product.getActive());
         response.setCreatedAt(product.getCreatedAt());
+
+        if (product.getCategory() != null) {
+            response.setCategoryId(product.getCategory().getId());
+            response.setCategoryName(product.getCategory().getName());
+        }
+
         return response;
     }
 }

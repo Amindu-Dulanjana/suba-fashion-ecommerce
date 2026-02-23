@@ -40,7 +40,10 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Environment & Secrets (important!)
+# Secret files - NEVER push these!
+application-local.properties
 application-prod.properties
+*.env
+.env
 
 

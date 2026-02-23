@@ -37,9 +37,9 @@ public class ProductController {
     }
 
     // GET /api/products/category/Electronics
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<ProductResponse>> getByCategory(@PathVariable String category) {
-        return ResponseEntity.ok(productService.getProductsByCategory(category));
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductResponse>> getByCategory(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
     }
 
     // GET /api/products/search?keyword=shirt
