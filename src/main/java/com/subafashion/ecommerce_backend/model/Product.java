@@ -32,6 +32,11 @@ public class Product {
     private String imageUrl;
     private String category;
 
+    private Boolean featured = false;
+
+    @Column(nullable = false)
+    private Boolean active = true;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
